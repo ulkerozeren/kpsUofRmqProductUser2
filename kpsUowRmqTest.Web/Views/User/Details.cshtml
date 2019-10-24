@@ -1,0 +1,58 @@
+﻿
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>User Details</h1>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+
+<br />
+<input type="text" name="name" value="" id="Name" placeholder="Ad" />
+<br />
+<input type="text" name="surname" value="" id="Surname" placeholder="Soyad" />
+<br />
+<input type="text" name="tckn" value="" id="TCKN" placeholder="TCKN" />
+<br />
+<input type="text" name="year" value="" id="Year" placeholder="Yıl" />
+<br />
+<input type="button" name="name" value="User gonder" onclick="postUser();" />
+
+
+<script>
+    function postUser() {
+
+        var TCKN = $("#TCKN").val();
+        var Surname = $("#Surname").val();
+        var Name = $("#Name").val();
+        var Year = $("#Year").val();
+
+        var objMainModel = {};
+
+        objMainModel.Year = Year;
+        objMainModel.Surname = Surname;
+        objMainModel.Name = Name;
+        objMainModel.TCKN = TCKN;
+
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:57374/api/users',
+            data: JSON.stringify(objMainModel),
+            contentType: 'application/json',
+            success: function (response) {
+
+                //    if (response.IsSuccess) {
+                //        $("#txt-Name").val(response.Name);
+                //        $("#txt-Surname").val(response.Surname);
+                //        hideLoader();
+                //}
+            },
+            failure: function (response) {
+                alert(response.responseText);
+            }
+        });
+
+    }
+</script>

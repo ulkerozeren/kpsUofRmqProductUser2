@@ -1,0 +1,183 @@
+﻿
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+
+@*<input type="button" name="name" value="Token Al" onclick="getToken();" />
+<br />
+<input type="button" name="name" value="Token gönder, bir ürün al" onclick="getProduct();" />
+<br />
+<input type="button" name="name" value="Token gönder, tüm ürünleri getir" onclick="getValues();" />
+
+
+
+<br />
+<input type="text" name="name" value="" id="Token" />
+<br />
+
+<br />
+<input type="text" name="name" value="" id="Name" placeholder="Ad"/>
+<br />
+<input type="text" name="surname" value="" id="Surname" placeholder="Soyad"/>
+<br />
+<input type="text" name="tckn" value="" id="TCKN" placeholder="TCKN"/>
+<br />
+<input type="text" name="year" value="" id="Year" placeholder="Yıl"/>
+<br />
+<input type="button" name="name" value="User gonder" onclick="postUser();" />*@
+
+
+<script>
+    window.Token = null;
+    //  http://localhost:50619/api/Authentication/request  buradan token al
+    //http://localhost:50619/api/values                  burada token ı kullan
+    function getToken() {
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:50619/api/Authentication/request',
+            data: '{username:"x", password:"y"}',
+            contentType: 'application/json',
+            success: function (resultData) {
+                window.Token = resultData;
+                $("#Token").val(resultData);
+            },
+            error: function (resultData) {
+                console.log(resultData);
+            }
+        });
+    }
+    function getValues() {
+        $.ajax({
+            type: 'GET',
+            //url: 'http://localhost:50619/api/values',
+            url: 'http://localhost:50619/api/product',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + window.Token);// values alanına ulaşırken token ı eklemiş oldukç.
+            },
+            data: {},
+            success: function (data) {
+                //$.each(data, function (i) {
+                //    console.log(data[i].name);
+                //})
+                alert("başarılı getvalues");
+                for (var i = 0; i < data.length; i++) {
+                    postValues(data[i]);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function getProduct() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:50619/api/product/3',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + window.Token);// values alanına ulaşırken token ı eklemiş oldukç.
+            },
+            data: {},
+            success: function (data) {
+                console.log(data);
+                postValues(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function postValues(data) {
+        $.ajax({
+            type: 'POST',
+            //url: 'http://localhost:50619/api/values',
+            //url: 'http://localhost:50619/api/product/1',
+            //url: 'http://localhost:50619/api/product',
+            url:'http://localhost:57374/api/products',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + window.Token);// values alanına ulaşırken token ı eklemiş oldukç.
+            },
+            contentType: 'application/json',
+            dataType: 'json',
+            //data: JSON.stringify({ Price: 67, Name: "aaaaaaa", Category: "ff" }),
+            data: JSON.stringify(data),
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function deleteProduct() {
+        $.ajax({
+            type: 'DELETE',
+            //url: 'http://localhost:50619/api/values',
+            //url: 'http://localhost:50619/api/product/1',
+            url: 'http://localhost:50619/api/product/2',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + window.Token);// values alanına ulaşırken token ı eklemiş oldukç.
+            },
+            contentType: 'application/json',
+            //data: JSON.stringify({ Price: 23, Name: "fdf", Category: "ff" }),
+            data: {},
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+    function putProduct() {
+        $.ajax({
+            type: 'PUT',
+            url: 'http://localhost:50619/api/product/2',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", "Bearer " + window.Token);// values alanına ulaşırken token ı eklemiş oldukç.
+            },
+            contentType: 'application/json',
+            data: JSON.stringify({Id:2, Price: 11, Name: "g", Category: "r" }),
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            }
+        });
+    }
+
+    function postUser() {
+
+        var TCKN = $("#TCKN").val();
+        var Surname = $("#Surname").val();
+        var Name = $("#Name").val();
+        var Year = $("#Year").val();
+
+        var objMainModel = {};
+
+        objMainModel.Year = Year;
+        objMainModel.Surname = Surname;
+        objMainModel.Name = Name;
+        objMainModel.TCKN = TCKN;     
+        
+                $.ajax({
+                    type: "POST",
+                    url: 'http://localhost:57374/api/users',
+                    data: JSON.stringify(objMainModel),
+                    contentType: 'application/json',
+                    success: function (response) {
+                  
+                    //    if (response.IsSuccess) {
+                    //        $("#txt-Name").val(response.Name);
+                    //        $("#txt-Surname").val(response.Surname);
+                    //        hideLoader();
+                    //}
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        
+    }
+</script>
